@@ -1,10 +1,12 @@
+# Import necessary libraries
+
 import re 
 import ply.lex as lex
 import ply.yacc as yacc
 import tkinter as tk
 from tkinter import messagebox
 
-# Define tokens
+# Define tokens used in the programming language
 tokens = [
     ("IF", r'\bif\b'),
     ("ELSE", r'\belse\b'),
@@ -33,17 +35,18 @@ def lexer(source_code):
             regex_match = re.match(regex, source_code)
             if regex_match:
                 match = regex_match
-                lexeme = match.group(0)
+                lexeme = match.group(0)# Get the matched text (lexeme)
                 if token_type != "WHITESPACE":
                     token_list.append((token_type, lexeme))
                 source_code = source_code[len(lexeme):]
                 break
         if not match:
-            raise ValueError(f"Unexpected character: {source_code[0]}")
+            raise ValueError(f"Unexpected character: {source_code[0]}")# Raise an error for unexpected characters
     return token_list
 
 # Lexer using PLY
 
+# Lexer class for Abstract Syntax Tree (AST) node representation
 
 class ASTNode:
     def __init__(self, node_type, value=None, children=None):
@@ -51,17 +54,18 @@ class ASTNode:
         self.value = value
         self.children = children or []
 
-# Parser for manual interpretation
+# Parser class for interpreting the tokenized input
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.position = 0
 
     def current_token(self):
-        return self.tokens[self.position] if self.position < len(self.tokens) else None
+        return self.tokens[self.position] if self.position < len(self.tokens) else None# Get the current token
 
     def consume(self, token_type):
-        if self.current_token() and self.current_token()[0] == token_type:
+        if self.current_token() and self.current_token()[0] == token_type:        # Check if the current token matches the expected token type
+
             self.position += 1
         else:
             raise ValueError(f"Expected {token_type}, got {self.current_token()}")
@@ -76,7 +80,7 @@ class Parser:
         return node
 
     def parse_term(self):
-        node = self.parse_factor()
+        node = self.parse_factor()# Parse the first factor (operand)
         while self.current_token() and self.current_token()[0] in ("MULTIPLY", "DIVIDE"):
             op = self.current_token()
             self.consume(op[0])
@@ -85,7 +89,8 @@ class Parser:
         return node
 
     def parse_factor(self):
-        if self.current_token()[0] == "NUMBER":
+        if self.current_token()[0] == "NUMBER":        # Parse a number, identifier, or parenthesized expression
+
             token = self.current_token()
             self.consume("NUMBER")
             return ASTNode("number", token[1])
@@ -103,7 +108,7 @@ class Parser:
 
     def parse_comparison(self):
         left = self.parse_expression()
-        if self.current_token() and self.current_token()[0] == "COMPARISON":
+        if self.current_token() and self.current_token()[0] == "COMPARISON":# Parse the left side of the comparison
             op = self.current_token()
             self.consume("COMPARISON")
             right = self.parse_expression()
@@ -111,6 +116,8 @@ class Parser:
         return left
 
     def parse_statement(self):
+                # Handle parsing of different types of statements
+
         if self.current_token()[0] == "IF":
             self.consume("IF")
             self.consume("LPAREN")
@@ -147,10 +154,10 @@ class Parser:
     
 
                 
-# Interpreter and Compiler code here...
+# Interpreter class to execute the AST
 class Interpreter:
     def __init__(self):
-        self.variables = {}
+        self.variables = {}# Dictionary to hold variable values
 
     def interpret(self, node):
         if node.node_type == "number":
@@ -202,7 +209,8 @@ class Interpreter:
 
 
 
-# Tkinter setup
+# Tkinter setup , # Tkinter setup function to run the interpreter from the GUI
+
 def run_interpreter():
     source_code = code_input.get("1.0", tk.END).strip()
     try:
@@ -215,6 +223,9 @@ def run_interpreter():
         result_output.insert(tk.END, f"Variables: {interpreter.variables}")
     except ValueError as e:
         messagebox.showerror("Interpreter Error", str(e))
+
+
+
 
 
 
